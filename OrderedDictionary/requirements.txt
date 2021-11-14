@@ -1,0 +1,2 @@
+Cython==0.29.15
+virtualenv==16.7.5
