@@ -1,17 +1,16 @@
-from craps_strategy import CrapsStrategy
+from craps_strategy import CrapsStrategy, validate_balance
 
 
 class PassLine(CrapsStrategy):
 
     def __init__(self, bank_roll: float, base_bet: float):
-        self.start_balance = bank_roll
-        self.end_balance = bank_roll
         self.base_bet = base_bet
         self.wins = 0
         self.lost = 0
-        #super().__init__(self)
+        super().__init__(bank_roll)
 
 
+    @validate_balance
     def craps(self, roll: int):
         ''' Method when the roll is craps or 7,11 '''
         print("winner")

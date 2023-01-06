@@ -1,9 +1,22 @@
 from abc import ABC, abstractmethod
 
+def validate_balance(function):
+
+    def wrapper(self, value):
+        print(f'calling validate {self.end_balance}')
+        if self.end_balance < 1:
+            print('No play balance is 0')
+        else:
+            func = function(self, value)
+    return wrapper
+
+
 class CrapsStrategy(ABC):
 
-    def __init__(self):
-        super().__init__(self)
+    def __init__(self, bank_roll: float):
+        self.start_balance = bank_roll
+        self.end_balance = bank_roll
+        super().__init__()
 
     @abstractmethod
     def craps(self, roll: int):

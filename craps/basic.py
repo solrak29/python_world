@@ -58,7 +58,7 @@ if __name__ == "__main__":
     come_bet = 5
     p = PassLine(bankroll, pass_line_bet)
 
-    craps = CrapsEngine(num_rolls=100, strategy=p)
+    craps = CrapsEngine(num_rolls=1000, strategy=p)
     craps.play()
     p.show_result()
 
