@@ -42,3 +42,5 @@ class PassLine(CrapsStrategy):
 
     def show_result(self):
         print(f'Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
+        print(f'Percentage wins {self.wins/(self.wins+self.lost)}')
+        print(f'Percentage lost {self.lost/(self.wins+self.lost)}')
