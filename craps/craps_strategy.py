@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 def validate_balance(function):
 
     def wrapper(self, value):
-        print(f'calling validate {self.end_balance}')
+        print(f'calling validate for {self.__class__.__name__} {self.end_balance}')
         if self.end_balance < 1:
             print('No play balance is 0')
         else:
