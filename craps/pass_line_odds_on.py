@@ -10,15 +10,18 @@ house take on pass line bet is 1.41% because the only pay 1:1 instead of true od
 you could say that when you put 100 dollars down, the house already has taken 1.40.
 
 '''
-class PassLineOdds(CrapsStrategy):
+class PassLineOddsOn(CrapsStrategy):
     '''
-        This strategy will play the odds until you can't cover it.
-        Once you can not cover the odds anymore it just resort to pass line game
+        This strategy will only play odds with winnings up to max odds set
+        
     '''
 
-    def __init__(self, bank_roll: float, base_bet: float, odds_bet: float):
+    def __init__(self, bank_roll: float, base_bet: float, max_odds_multiplier: float):
         self.base_bet = base_bet
-        self.odds_bet = odds_bet
+        self.odds_bet = 0
+        self.orig_bank_roll = bank_roll
+        self.max_odds = max_odds_multiplier
+
         self.wins = 0
         self.lost = 0
         super().__init__(bank_roll)
@@ -49,6 +52,15 @@ class PassLineOdds(CrapsStrategy):
         '''Method when the point is initially made'''
         if self.end_balance < self.odds_bet:
             self.odds_bet = 0
+        winnings = self.end_balance - self.orig_bank_roll
+        if winnings > self.base_bet:
+            odds_play = int(winnings/self.base_bet)
+            if odds_play > self.max_odds:
+                odds_play = self.max_odds
+            self.odds_bet = odds_play * self.base_bet
+        else:
+            self.odds_bet = 0
+        print(f"Placing odds {self.odds_bet}")
 
 
     def point(self, roll: int):

@@ -26,19 +26,24 @@ class CrapsEngine:
 
     def play(self):
        for rolls in range(1, self.num_rolls + 1):
+           print("***Place your bets***")
            #self._call_strat("place_bets")
            roll = self.roll_dice()
            if self.game_state == CrapsEngine.GAME_STATE_OFF: 
                if roll in (7,11,2,3,12):
+                   print(f"***craps {roll}***")
                    self._call_strat("craps", roll)
                else:
+                   print(f"***point {roll}***")
                    self.game_state = roll
                    self._call_strat("point_made", roll)
            else:
                if roll == 7:
+                   print(f"*** {roll} out ***")
                    self.game_state = CrapsEngine.GAME_STATE_OFF
                    self._call_strat("out", roll)
                if roll == self.game_state:
+                   print(f"*** winner {roll} ***")
                    self.game_state = CrapsEngine.GAME_STATE_OFF
                    self._call_strat("point", roll)
                else:

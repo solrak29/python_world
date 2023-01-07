@@ -14,12 +14,12 @@ class PassLine(CrapsStrategy):
     def craps(self, roll: int):
         ''' Method when the roll is craps or 7,11 '''
         if roll in (7,11):
-            print("winner")
             self.wins += 1
             self.end_balance += self.base_bet
         else:
             self.lost += 1
             self.end_balance -= self.base_bet
+        print(f"PassLine => {self.end_balance}")
 
 
     def point_made(self, roll: int):
@@ -32,7 +32,7 @@ class PassLine(CrapsStrategy):
         '''Method when the a point is rolled after it was made'''
         self.end_balance += self.base_bet
         self.wins += 1
-        print("winner")
+        print(f"PassLine => {self.end_balance}")
 
 
     def roll(self, roll: int):
@@ -44,7 +44,7 @@ class PassLine(CrapsStrategy):
         '''Method when you 7 out'''
         self.end_balance -= self.base_bet
         self.lost += 1
-        print("loser")
+        print(f"PassLine => {self.end_balance}")
 
     def show_result(self):
         print(f'Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
