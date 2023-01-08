@@ -1,4 +1,5 @@
 import random
+import numpy as np
 from craps_strategy import CrapsStrategy
 
 class CrapsEngine:
@@ -15,8 +16,10 @@ class CrapsEngine:
 
 
     def roll_dice(self):
-       dice1 = random.randint(1, 6)
-       dice2 = random.randint(1, 6)
+       #dice1 = random.randint(1, 6)
+       dice1 = np.random.randint(1, 7)
+       #dice2 = random.randint(1, 6)
+       dice2 = np.random.randint(1, 7)
        return dice1 + dice2
 
     def _call_strat(self, method: str, roll: int):
