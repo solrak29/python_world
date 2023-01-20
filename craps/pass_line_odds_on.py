@@ -21,9 +21,6 @@ class PassLineOddsOn(CrapsStrategy):
         self.odds_bet = 0
         self.orig_bank_roll = bank_roll
         self.max_odds = max_odds_multiplier
-
-        self.wins = 0
-        self.lost = 0
         super().__init__(bank_roll)
 
 
@@ -39,8 +36,7 @@ class PassLineOddsOn(CrapsStrategy):
     def craps(self, roll: int):
         ''' Method when the roll is craps or 7,11 '''
         if roll in (7,11):
-            self.wins += 1
-            self.end_balance += self.base_bet
+            self.win(self.base_bet)
         else:
             self.lost += 1
             self.end_balance -= self.base_bet
@@ -65,9 +61,7 @@ class PassLineOddsOn(CrapsStrategy):
 
     def point(self, roll: int):
         '''Method when the a point is rolled after it was made'''
-        self.end_balance += self.base_bet
-        self.end_balance += (self.odds_bet * self._true_odds(roll))
-        self.wins += 1
+        self.win(self.base_bet + ( self.odds_bet * self._true_odds(roll)))
         print(f"PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
 
 
@@ -86,3 +80,4 @@ class PassLineOddsOn(CrapsStrategy):
         print(f'Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
         print(f'Percentage wins {self.wins/(self.wins+self.lost)}')
         print(f'Percentage lost {self.lost/(self.wins+self.lost)}')
+        print(f'Max Winnings On Roll {self.max_win[0]} on roll {self.max_win[1]}')

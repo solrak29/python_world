@@ -16,7 +16,19 @@ class CrapsStrategy(ABC):
     def __init__(self, bank_roll: float):
         self.start_balance = bank_roll
         self.end_balance = bank_roll
+        self.wins = 0
+        self.lost = 0
+        self.max_win = [0, 0]  # tuple of max win on which roll
         super().__init__()
+
+
+    def win(self, base_bet):
+        self.wins += 1
+        self.end_balance += self.base_bet
+        if self.max_win[0] < self.end_balance:
+            self.max_win[0] = self.end_balance
+            self.max_win[1] = self.wins + self.lost
+
 
     @abstractmethod
     def craps(self, roll: int):

@@ -2,11 +2,12 @@ from craps_strategy import CrapsStrategy, validate_balance
 
 
 class PassLine(CrapsStrategy):
+    '''
+    Basic strategy of just playing the past line
+    '''
 
     def __init__(self, bank_roll: float, base_bet: float):
         self.base_bet = base_bet
-        self.wins = 0
-        self.lost = 0
         super().__init__(bank_roll)
 
 
@@ -14,8 +15,7 @@ class PassLine(CrapsStrategy):
     def craps(self, roll: int):
         ''' Method when the roll is craps or 7,11 '''
         if roll in (7,11):
-            self.wins += 1
-            self.end_balance += self.base_bet
+            self.win(self.base_bet )
         else:
             self.lost += 1
             self.end_balance -= self.base_bet
@@ -30,8 +30,7 @@ class PassLine(CrapsStrategy):
     @validate_balance
     def point(self, roll: int):
         '''Method when the a point is rolled after it was made'''
-        self.end_balance += self.base_bet
-        self.wins += 1
+        self.win(self.base_bet)
         print(f"PassLine => {self.end_balance}")
 
 
@@ -50,3 +49,4 @@ class PassLine(CrapsStrategy):
         print(f'Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
         print(f'Percentage wins {self.wins/(self.wins+self.lost)}')
         print(f'Percentage lost {self.lost/(self.wins+self.lost)}')
+        print(f'Max Winnings On Roll {self.max_win[0]} on roll {self.max_win[1]}')
