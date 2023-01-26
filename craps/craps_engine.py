@@ -22,10 +22,21 @@ class CrapsEngine:
        dice2 = np.random.randint(1, 7)
        return dice1 + dice2
 
+
+    def _call_strat_save(self, method: str, roll_num: int = None, roll: int = None):
+        for strat in self.strategy:
+            func = getattr(strat, method)
+            if method == "save":
+                func(roll_num, roll)
+            else:
+                func()
+
+
     def _call_strat(self, method: str, roll: int):
         for strat in self.strategy:
             func = getattr(strat, method)
             func(roll)
+
 
     def play(self):
        for rolls in range(1, self.num_rolls + 1):
@@ -51,3 +62,7 @@ class CrapsEngine:
                    self._call_strat("point", roll)
                else:
                    self._call_strat("roll", roll)
+           self._call_strat_save("save", rolls, roll)
+       self._call_strat_save("save_to_file")
+
+    

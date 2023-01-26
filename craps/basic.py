@@ -1,6 +1,7 @@
 from pass_line_strategy import PassLine
 from pass_line_with_odds import PassLineOdds
 from pass_line_odds_on import PassLineOddsOn
+from pass_dont_pass_switch import PassDontSwitch 
 from craps_engine import CrapsEngine
 
 
@@ -15,10 +16,11 @@ if __name__ == "__main__":
     p2 = PassLineOdds(bankroll, pass_line_bet, pass_line_bet * 2)
     p3 = PassLineOdds(bankroll, pass_line_bet, pass_line_bet * 10)
     p4 = PassLineOddsOn(bankroll, pass_line_bet, 10)
+    p5 = PassDontSwitch(bankroll, pass_line_bet, 10)
 
     #  A single session would be at the most 100 rolls of the dice.
     #  You can go higher, but maybe break this up into multiple games
-    craps = CrapsEngine(num_rolls=num_rolls, strategy=(p, p2, p3, p4))
+    craps = CrapsEngine(num_rolls=num_rolls, strategy=(p, p2, p3, p4, p5))
     craps.play()
     print("--------")
     print(f"Bank Roll Start {bankroll}")
@@ -40,3 +42,7 @@ if __name__ == "__main__":
     print("Pass Line Odds On Winnings only up 10X")
     print("--------")
     p4.show_result()
+    print("--------")
+    print("Pass Dont Switch")
+    print("--------")
+    p5.show_result()

@@ -9,6 +9,13 @@ Payouts: typically match the true odds, although some casinos may offer slightly
 house take on pass line bet is 1.41% because the only pay 1:1 instead of true odds of hitting the 7.
 you could say that when you put 100 dollars down, the house already has taken 1.40.
 
+when you lay the odds you have to pay multiples (even taking the odds)
+
+TODO: we need to code to provide proper odds and pay out for put bets.
+so 6,8 your adds are 6:5 for every mulitiple of 5 you win 6.  for lay you have to put mutliple of 6 to get 5
+for 9,5 your odds are 3:2 for every multiple of 2 you get 3.  you must lay a mutliple of 3 to get 2.
+for 10,4, your odds are 2:1 for every mutlipl of 1 you get 2.  you must lay a mutliple of 2 to get 1
+
 '''
 class PassDontSwitch(CrapsStrategy):
     '''
@@ -32,10 +39,16 @@ class PassDontSwitch(CrapsStrategy):
 
     def _true_odds(self, point: int) -> float:
         if point in (4,10):
+            if self.dont:
+                return 0.5
             return 2
         if point in (5,9):
+            if self.dont:
+                return 0.66
             return 1.5
         if point in (6,8):
+            if self.dont:
+                return 0.83
             return 1.2
 
 
@@ -70,17 +83,35 @@ class PassDontSwitch(CrapsStrategy):
 
     @validate_balance
     def point_made(self, roll: int):
-        '''Method when the point is initially made'''
-        ''' TODO Need to check proper odds as the dont side you have put extra'''
+        """
+        Playing odds on dont is different
+        6 and 8 you need multiples of 6 to win multiples of 5 (i.e. 6:5)
+        for 5,9 you need multiples of 3 to win multiples of 2 (i.e. 3:2)
+        for 4, 10,  you need multiples of 2 to win 1 (i.e. 2:1)
+        """
         self._point = roll
         if self.end_balance < self.odds_bet:
             self.odds_bet = 0
         winnings = self.end_balance - self.orig_bank_roll
         if winnings > self.base_bet:
-            odds_play = int(winnings/self.base_bet)
+            if self._point in ( 6,8 ):
+                multiple = 6
+            elif self._point in (5,9):
+                multiple = 3
+            elif self._point in (4,10):
+                multiple = 2
+            print(f'mult {multiple}')
+            count = 1
+            base_play = 0
+            while base_play < winnings:
+                print(f'add mult {multiple} base {self.base_bet}')
+                base_play = multiple * count
+                count += 1
+            print(f'mult {multiple}')
+            odds_play = int(winnings/base_play)
             if odds_play > self.max_odds:
-                odds_play = self.max_odds
-            self.odds_bet = odds_play * self.base_bet
+                odds_play = self.max_odds * base_play
+            self.odds_bet = odds_play * base_play
         else:
             self.odds_bet = 0
         print(f"PassDont Switch Placing odds {self.odds_bet}")

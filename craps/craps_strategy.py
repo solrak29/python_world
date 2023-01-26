@@ -5,7 +5,7 @@ def validate_balance(function):
     def wrapper(self, value):
         #print(f'calling validate for {self.__class__.__name__} {self.end_balance}')
         if self.end_balance < 1:
-            print('No play balance is 0')
+            print(f'{self.__class__.__name__}: No play balance is 0')
         else:
             func = function(self, value)
     return wrapper
@@ -18,13 +18,32 @@ class CrapsStrategy(ABC):
         self.end_balance = bank_roll
         self.wins = 0
         self.lost = 0
-        self.max_win = [0, 0]  # tuple of max win on which roll
+        self.max_win = [0, 0]  # max win on which roll
+        self.tracking = []  # track roll #, roll, and balance to see in graph
         super().__init__()
 
 
+    def save( self, roll_num, roll):
+        '''
+            Tracks the rolls so we can plot the roll and balance on graph
+            This call is done after all the calls are made base on the rolls.
+            See craps_engine.py line 54
+        '''
+        self.tracking.append((roll, self.end_balance))
+
+
+    def save_to_file(self):
+        with open( f'{self.__class__.__name__}.csv', 'w') as f:
+            for x,y in enumerate(self.tracking):
+                f.write(f'{x},{y[0]},{y[1]}\n')
+
+
     def win(self, base_bet):
+        print(f'wins {base_bet}')
+        print(f'before {self.end_balance}')
         self.wins += 1
-        self.end_balance += self.base_bet
+        self.end_balance = self.end_balance + base_bet
+        print(f'wins {self.end_balance}')
         if self.max_win[0] < self.end_balance:
             self.max_win[0] = self.end_balance
             self.max_win[1] = self.wins + self.lost

@@ -48,12 +48,14 @@ class PassLineOdds(CrapsStrategy):
             self.odds_bet = 0
 
 
+    @validate_balance
     def point(self, roll: int):
         '''Method when the a point is rolled after it was made'''
         self.win( self.base_bet + (self.odds_bet * self._true_odds(roll)))
         print(f"PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
 
 
+    @validate_balance
     def roll(self, roll: int):
         ''' Method called when the point is made and roll is not the point'''
         pass
