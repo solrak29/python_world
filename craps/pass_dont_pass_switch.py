@@ -44,7 +44,7 @@ class PassDontSwitch(CrapsStrategy):
             return 2
         if point in (5,9):
             if self.dont:
-                return 0.66
+                return 0.6667
             return 1.5
         if point in (6,8):
             if self.dont:
@@ -81,15 +81,23 @@ class PassDontSwitch(CrapsStrategy):
         print(f"PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
 
 
-    @validate_balance
-    def point_made(self, roll: int):
-        """
-        Playing odds on dont is different
-        6 and 8 you need multiples of 6 to win multiples of 5 (i.e. 6:5)
-        for 5,9 you need multiples of 3 to win multiples of 2 (i.e. 3:2)
-        for 4, 10,  you need multiples of 2 to win 1 (i.e. 2:1)
-        """
-        self._point = roll
+    def bet_on_pass_side(self, roll: int):
+        '''Method when the point is initially made'''
+        if self.end_balance < self.odds_bet:
+            self.odds_bet = 0
+        winnings = self.end_balance - self.orig_bank_roll
+        if winnings > self.base_bet:
+            odds_play = int(winnings/self.base_bet)
+            if odds_play > self.max_odds:
+                odds_play = self.max_odds
+            self.odds_bet = odds_play * self.base_bet
+        else:
+            self.odds_bet = 0
+        print(f"Placing odds {self.odds_bet}")
+
+
+    def bet_on_dont_side(self, roll: int):
+        multiple = 0
         if self.end_balance < self.odds_bet:
             self.odds_bet = 0
         winnings = self.end_balance - self.orig_bank_roll
@@ -100,21 +108,38 @@ class PassDontSwitch(CrapsStrategy):
                 multiple = 3
             elif self._point in (4,10):
                 multiple = 2
-            print(f'mult {multiple}')
             count = 1
             base_play = 0
             while base_play < winnings:
-                print(f'add mult {multiple} base {self.base_bet}')
+                prev_base = base_play
                 base_play = multiple * count
+                if base_play > winnings:
+                    base_play = prev_base
+                    break
                 count += 1
-            print(f'mult {multiple}')
-            odds_play = int(winnings/base_play)
-            if odds_play > self.max_odds:
-                odds_play = self.max_odds * base_play
-            self.odds_bet = odds_play * base_play
+            odds_play = int(base_play/self.base_bet)
+            if odds_play <= self.max_odds:
+                self.odds_bet = base_play
+            else:
+                self.odds_bet = self.max_odds * self.base_bet
         else:
             self.odds_bet = 0
         print(f"PassDont Switch Placing odds {self.odds_bet}")
+
+
+    @validate_balance
+    def point_made(self, roll: int):
+        """
+        Playing odds on dont is different
+        6 and 8 you need multiples of 6 to win multiples of 5 (i.e. 6:5)
+        for 5,9 you need multiples of 3 to win multiples of 2 (i.e. 3:2)
+        for 4, 10,  you need multiples of 2 to win 1 (i.e. 2:1)
+        """
+        self._point = roll
+        if self.dont:
+            self.bet_on_dont_side(roll)
+        else: 
+            self.bet_on_pass_side(roll)
 
 
     @validate_balance
@@ -140,7 +165,7 @@ class PassDontSwitch(CrapsStrategy):
         if self.dont:
             print(f'point craps {self._point}')
             print(f'{self.base_bet} {self.odds_bet} {self._true_odds(self._point)}')
-            self.win(self.base_bet + ( self.odds_bet * self._true_odds(self._point)))
+            self.win(self.base_bet + ( self.odds_bet * self._true_odds(self._point)) + self.odds_bet)
             self._point = 0
         else:
             self.end_balance -= (self.base_bet + self.odds_bet)

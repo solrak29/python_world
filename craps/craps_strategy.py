@@ -43,6 +43,7 @@ class CrapsStrategy(ABC):
         print(f'before {self.end_balance}')
         self.wins += 1
         self.end_balance = self.end_balance + base_bet
+        self.end_balance = round(self.end_balance,2)
         print(f'wins {self.end_balance}')
         if self.max_win[0] < self.end_balance:
             self.max_win[0] = self.end_balance
