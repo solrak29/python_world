@@ -1,6 +1,7 @@
 import random
 import numpy as np
 from craps_strategy import CrapsStrategy
+from dice_roll import dice_roll
 
 class CrapsEngine:
     '''
@@ -13,13 +14,15 @@ class CrapsEngine:
         self.num_rolls = num_rolls
         self.strategy = strategy
         self.game_state = CrapsEngine.GAME_STATE_OFF
+        self.dice_roll = dice_roll.dice_factory.create(dice_roll.DiceRoller.Crypt)
 
 
     def roll_dice(self):
        #dice1 = random.randint(1, 6)
-       dice1 = np.random.randint(1, 7)
+       #dice1 = np.random.randint(1, 7)
        #dice2 = random.randint(1, 6)
-       dice2 = np.random.randint(1, 7)
+       #dice2 = np.random.randint(1, 7)
+       dice1, dice2 = self.dice_roll.roll()
        return dice1 + dice2
 
 

@@ -31,60 +31,59 @@ class PassDontSwitch(CrapsStrategy):
         self.odds_bet = 0
         self.orig_bank_roll = bank_roll
         self.max_odds = max_odds_multiplier
-        self.dont = False
-        self.lost_limit = 3  # number of times we can lose before switch
+        self.on_dont = False
+        self.lost_limit = 2  # number of times we can lose before switch
         self._point = 0  # need to store point since on the dont we don't know what the point was
         super().__init__(bank_roll)
 
 
     def _true_odds(self, point: int) -> float:
         if point in (4,10):
-            if self.dont:
+            if self.on_dont:
                 return 0.5
             return 2
         if point in (5,9):
-            if self.dont:
+            if self.on_dont:
                 return 0.6667
             return 1.5
         if point in (6,8):
-            if self.dont:
+            if self.on_dont:
                 return 0.83
             return 1.2
+        return 0.0
 
 
     def check_lost_limit(self):
         self.lost_limit -= 1
         if self.lost_limit == 0:
-            self.dont = True if self.dont == False else True 
+            self.on_dont = True if self.on_dont == False else True 
             self.lost_limit = 3
-            print (f"Switching dont {self.dont}")
+            print (f"Switching dont {self.on_dont}")
 
 
     @validate_balance
     def craps(self, roll: int):
         ''' Method when the roll is craps or 7,11 '''
         if roll in (7,11):
-            if self.dont:
+            if self.on_dont:
                 self.end_balance -= self.base_bet
                 self.lost += 1
                 self.check_lost_limit()
             else:
                 self.win(self.base_bet)
         else:
-            if self.dont:
+            if self.on_dont:
                 if roll != 12:
                     self.win(self.base_bet)
             else:
                 self.lost += 1
                 self.end_balance -= self.base_bet
                 self.check_lost_limit()
-        print(f"PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
+        print(f"{__name__} : PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
 
 
     def bet_on_pass_side(self, roll: int):
         '''Method when the point is initially made'''
-        if self.end_balance < self.odds_bet:
-            self.odds_bet = 0
         winnings = self.end_balance - self.orig_bank_roll
         if winnings > self.base_bet:
             odds_play = int(winnings/self.base_bet)
@@ -93,13 +92,11 @@ class PassDontSwitch(CrapsStrategy):
             self.odds_bet = odds_play * self.base_bet
         else:
             self.odds_bet = 0
-        print(f"Placing odds {self.odds_bet}")
+        print(f"{__name__}: Placing odds {self.odds_bet}")
 
 
     def bet_on_dont_side(self, roll: int):
         multiple = 0
-        if self.end_balance < self.odds_bet:
-            self.odds_bet = 0
         winnings = self.end_balance - self.orig_bank_roll
         if winnings > self.base_bet:
             if self._point in ( 6,8 ):
@@ -124,7 +121,7 @@ class PassDontSwitch(CrapsStrategy):
                 self.odds_bet = self.max_odds * self.base_bet
         else:
             self.odds_bet = 0
-        print(f"PassDont Switch Placing odds {self.odds_bet}")
+        print(f"{__name__}: PassDont Switch Placing odds {self.odds_bet}")
 
 
     @validate_balance
@@ -135,23 +132,25 @@ class PassDontSwitch(CrapsStrategy):
         for 5,9 you need multiples of 3 to win multiples of 2 (i.e. 3:2)
         for 4, 10,  you need multiples of 2 to win 1 (i.e. 2:1)
         """
+        #  places the odds if we have enough
         self._point = roll
-        if self.dont:
-            self.bet_on_dont_side(roll)
-        else: 
-            self.bet_on_pass_side(roll)
+        if self.end_balance < self.odds_bet:
+            self.odds_bet = 0
+            print('Not enough to play odds')
+        else:
+            self.bet_on_dont_side(roll) if self.on_dont else self.bet_on_pass_side(roll)
 
 
     @validate_balance
     def point(self, roll: int):
         '''Method when the a point is rolled after it was made'''
-        if self.dont:
+        if self.on_dont:
             self.end_balance -= (self.base_bet + self.odds_bet)
             self.lost += 1
             self.check_lost_limit()
         else:
             self.win(self.base_bet + ( self.odds_bet * self._true_odds(roll)))
-        print(f"PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
+        print(f"{__name__}: PassLineOdds ( {self.odds_bet} ) => {self.end_balance}")
 
 
     @validate_balance
@@ -162,19 +161,19 @@ class PassDontSwitch(CrapsStrategy):
     @validate_balance
     def out(self, roll: int):
         '''Method when you 7 out'''
-        if self.dont:
-            print(f'point craps {self._point}')
-            print(f'{self.base_bet} {self.odds_bet} {self._true_odds(self._point)}')
+        if self.on_dont:
+            print(f'{__name__}: point craps {self._point}')
+            print(f'{__name__}: {self.base_bet} {self.odds_bet} {self._true_odds(self._point)}')
             self.win(self.base_bet + ( self.odds_bet * self._true_odds(self._point)) + self.odds_bet)
             self._point = 0
         else:
             self.end_balance -= (self.base_bet + self.odds_bet)
             self.lost += 1
             self.check_lost_limit()
-        print(f"PassDontSwitch ( {self.odds_bet} ) => {self.end_balance}")
+        print(f"{__name__}: PassDontSwitch ( {self.odds_bet} ) => {self.end_balance}")
 
     def show_result(self):
-        print(f'Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
-        print(f'Percentage wins {self.wins/(self.wins+self.lost)}')
-        print(f'Percentage lost {self.lost/(self.wins+self.lost)}')
-        print(f'Max Winnings On Roll {self.max_win[0]} on roll {self.max_win[1]}')
+        print(f'{__name__}: Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
+        print(f'{__name__}: Percentage wins {self.wins/(self.wins+self.lost)}')
+        print(f'{__name__}: Percentage lost {self.lost/(self.wins+self.lost)}')
+        print(f'{__name__}: Max Winnings On Roll {self.max_win[0]} on roll {self.max_win[1]}')

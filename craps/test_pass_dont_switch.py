@@ -9,9 +9,9 @@ def test_dont_with_odds_4():
 
     # Lose 3 times to get into the don't mode of betting
     p5.out(7) # 495
-    p5.out(7) # 490
-    p5.out(7) # 485
-    assert p5.dont == True
+    p5.out(7) # 490  # switch to don't here
+    p5.out(7) # 495
+    assert p5.on_dont == True
 
     # Get our winnings to where we will play the odds.
     p5.craps(3) # 490
@@ -29,9 +29,9 @@ def test_dont_with_odds_4():
     p5.roll(5)  # this is ok since point is made
     p5.roll(5)  # this is ok since point is made
     p5.roll(5)  # this is ok since point is made
-    assert p5.odds_bet == 20
+    assert p5.odds_bet == 30
     p5.out(7)  # this is ok since point is made
-    assert p5.end_balance == 535 # 20 + 10
+    assert p5.end_balance == 580 # 20 + 10
 
 
 def test_dont_with_odds_5():
@@ -44,7 +44,7 @@ def test_dont_with_odds_5():
     p5.out(7) # 495
     p5.out(7) # 490
     p5.out(7) # 485
-    assert p5.dont == True
+    assert p5.on_dont == True
 
     # Get our winnings to where we will play the odds.
     p5.craps(3) # 490
@@ -62,6 +62,6 @@ def test_dont_with_odds_5():
     p5.roll(5)  # this is ok since point is made
     p5.roll(5)  # this is ok since point is made
     p5.roll(5)  # this is ok since point is made
-    assert p5.odds_bet == 18  # becasue the odds are 3:2 we either can do 18 or 21 for odds.
+    assert p5.odds_bet == 30  # becasue the odds are 3:2 we either can do 18 or 21 for odds.
     p5.out(7)  # this is ok since point is made
-    assert p5.end_balance == 555 # 20 + 10
+    assert p5.end_balance == 585 # 20 + 10
