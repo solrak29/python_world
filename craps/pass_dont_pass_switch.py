@@ -38,6 +38,8 @@ class PassDontSwitch(CrapsStrategy):
 
 
     def _true_odds(self, point: int) -> float:
+        # pays 1 to 2 (for every 1 dollar you win 2)
+        # odds pay 2 to 1 (for every 2 dollars you win 1)
         if point in (4,10):
             if self.on_dont:
                 return 0.5
@@ -164,13 +166,13 @@ class PassDontSwitch(CrapsStrategy):
         if self.on_dont:
             print(f'{__name__}: point craps {self._point}')
             print(f'{__name__}: {self.base_bet} {self.odds_bet} {self._true_odds(self._point)}')
-            self.win(self.base_bet + ( self.odds_bet * self._true_odds(self._point)) + self.odds_bet)
+            self.win(self.base_bet + ( self.odds_bet * self._true_odds(self._point)))
             self._point = 0
         else:
             self.end_balance -= (self.base_bet + self.odds_bet)
             self.lost += 1
             self.check_lost_limit()
-        print(f"{__name__}: PassDontSwitch ( {self.odds_bet} ) => {self.end_balance}")
+        print(f"{__name__}: PassDontSwitch ( Odds {self.odds_bet} ) => {self.end_balance}")
 
     def show_result(self):
         print(f'{__name__}: Winners {self.wins} Losers {self.lost} Final Balance {self.end_balance}')
